@@ -16,7 +16,7 @@ d3.json('airports.json').then(airports=>{
             .style('width', '100%')  
             .attr('viewBox', [0,0,width, height])
             .append('g')
-            .attr('transform', `translate(${half}, ${half})`)
+            .attr('transform', `translate(${half/8}, ${half/8})`)
 
     const circleScale=d3.scaleLinear()
         .domain(d3.extent(anodes,d=>d.passengers))
@@ -27,8 +27,14 @@ d3.json('airports.json').then(airports=>{
         .range(d3.schemeTableau10)
     
     const airForce = d3.forceSimulation()
-        .force('charge', d3.forceManyBody().strength(-50))
-        .force('center', d3.forceCenter([half, half]))
+        .force('charge', d3.forceManyBody().strength(-20))
+        .force('center', d3.forceCenter(half, half))
+        //.force('x',d3.forceX(100))
+        //.force('y',d3.forceY())
+
+    airForce.force('link', d3.forceLink()
+        .id(link => link.id)
+        .strength(link => link.strength))
     
     const nodeElements=svg.append('g')
         .selectAll('circle')
@@ -39,7 +45,8 @@ d3.json('airports.json').then(airports=>{
 
     airForce.nodes(anodes).on("tick", function(){
         nodeElements
-            .attr("cx", node => node.latitude)
-            .attr("cy", node => node.longitude)
+            .attr("cx", node => node.x)
+            .attr("cy", node => node.y)
         })
+    
 })
