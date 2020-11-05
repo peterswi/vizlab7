@@ -1,8 +1,8 @@
 //Lab 7-- Mapping
 
 
-const width=500
-const height=500
+const width=1000
+const height=1000
 const half=width/2
 
 d3.json('airports.json').then(airports=>{
@@ -16,7 +16,7 @@ d3.json('airports.json').then(airports=>{
             .style('width', '100%')  
             .attr('viewBox', [0,0,width, height])
             .append('g')
-            .attr('transform', `translate(${half/8}, ${half/8})`)
+            .attr('transform', `translate(${width/16}, ${height/16})`)
 
     const circleScale=d3.scaleLinear()
         .domain(d3.extent(anodes,d=>d.passengers))
