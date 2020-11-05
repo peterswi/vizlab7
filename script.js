@@ -9,7 +9,8 @@ d3.json('airports.json').then(airports=>{
    
 
     const anodes=airports.nodes
-    console.log(anodes)
+    const alinks=airports.links
+    console.log(anodes, alinks)
 
     const svg = d3.select('.chart')
             .append('svg')
@@ -29,6 +30,7 @@ d3.json('airports.json').then(airports=>{
     const airForce = d3.forceSimulation()
         .force('charge', d3.forceManyBody().strength(-20))
         .force('center', d3.forceCenter(half, half))
+        
         //.force('x',d3.forceX(100))
         //.force('y',d3.forceY())
 
@@ -43,10 +45,26 @@ d3.json('airports.json').then(airports=>{
           .attr('r', d=>circleScale(d.passengers))
           .attr('fill', d=>portScale(d.name))
 
+    nodeElements.append("title")
+      .text(d=>d.name)
+    
+    const linkElements = svg.append('g')
+      .selectAll('line')
+      .data(alinks)
+      .enter().append('line')
+        .attr('stroke-width', 1)
+        .attr('stroke', '#E5E5E5')
+        
     airForce.nodes(anodes).on("tick", function(){
         nodeElements
             .attr("cx", node => node.x)
             .attr("cy", node => node.y)
+        linkElements
+            .attr('x1', link => link.source.x)
+            .attr('y1', link => link.source.y)
+            .attr('x2', link => link.target.x)
+            .attr('y2', link => link.target.y)
         })
-    
+    airForce.force('link').link(alinks)
+       
 })
