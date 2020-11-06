@@ -1,8 +1,8 @@
 //Lab 7-- Mapping
 
 
-const width=1000
-const height=1000
+const width=800
+const height=800
 const half=width/2
 
 d3.json('airports.json').then(airports=>{
@@ -14,7 +14,8 @@ d3.json('airports.json').then(airports=>{
 
     const svg = d3.select('.chart')
             .append('svg')
-            .style('width', '100%')  
+            .attr('width', width)  
+            .attr('height',height)
             .attr('viewBox', [0,0,width, height])
             .append('g')
             .attr('transform', `translate(${width/16}, ${height/16})`)
