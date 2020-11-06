@@ -28,19 +28,20 @@ d3.json('airports.json').then(airports=>{
         .domain(anodes, d=>d.name)
         .range(d3.schemeTableau10)
     
-    const airForce = d3.forceSimulation()
-        .force('charge', d3.forceManyBody().strength(-20))
-        .force('center', d3.forceCenter(half, half))
-        
+    const airForce = d3.forceSimulation(anodes)
+        .force('charge', d3.forceManyBody().strength(-40))
+        .force('center', d3.forceCenter().x(half).y(half))
+        .force('link', d3.forceLink(alinks).distance(50))
         //.force('x',d3.forceX(100))
         //.force('y',d3.forceY())
 
-    airForce.force('link', d3.forceLink()
-        .id(link => link.id)
-        .strength(link => link.strength))
+        const linkElements = svg.selectAll('line')
+        .data(alinks)
+        .enter().append('line')
+          .attr('stroke-width', 1)
+          .attr('stroke', 'black')
     
-    const nodeElements=svg.append('g')
-        .selectAll('circle')
+    const nodeElements=svg.selectAll('circle')
         .data(anodes)
         .enter().append('circle')
           .attr('r', d=>circleScale(d.passengers))
@@ -49,14 +50,9 @@ d3.json('airports.json').then(airports=>{
     nodeElements.append("title")
       .text(d=>d.name)
     
-    const linkElements = svg.append('g')
-      .selectAll('line')
-      .data(alinks)
-      .enter().append('line')
-        .attr('stroke-width', 1)
-        .attr('stroke', '#E5E5E5')
+  
         
-    airForce.nodes(anodes).on("tick", function(){
+    airForce.on("tick", function(){
         nodeElements
             .attr("cx", node => node.x)
             .attr("cy", node => node.y)
