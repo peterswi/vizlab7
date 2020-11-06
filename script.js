@@ -31,12 +31,20 @@ drag = airForce => {
 
 }
 
-d3.json('airports.json').then(airports=>{
-   
+Promise.all([ // load multiple files
+	d3.json('airports.json'),
+	d3.json('world-110m.json')
+]).then(data=>{ // or use destructuring :([airports, wordmap])=>{ ... 
+	let airports = data[0]; // data1.csv
+	let worldmap = data[1]; // data2.json
 
     const anodes=airports.nodes
     const alinks=airports.links
-    console.log(anodes, alinks)
+
+    let worldmapgeo = topojson.feature(worldmap, worldmap.objects.countries)
+    
+    const world=d3.geoMercator().fitExtent([[0,0],[width, height]],worldmapgeo)
+    let worldPath=d3.geoPath().projection(world)
 
     const svg = d3.select('.chart')
             .append('svg')
@@ -45,6 +53,18 @@ d3.json('airports.json').then(airports=>{
             .attr('viewBox', [0,0,width, height])
             .append('g')
             .attr('transform', `translate(${width/16}, ${height/16})`)
+
+    const map = svg.append("path")
+        .datum(worldmapgeo)
+        .attr("d", worldPath)
+        .style("opacity", 0)
+
+    const mapOutline=svg.append("path")
+            .datum(topojson.mesh(worldmap, worldmap.objects.countries))
+            .attr("d", worldPath)
+            .attr('fill', 'none')
+            .attr('stroke', 'white')
+            .attr("class", "subunit-boundary")
 
     const circleScale=d3.scaleLinear()
         .domain(d3.extent(anodes,d=>d.passengers))
@@ -106,5 +126,17 @@ d3.json('airports.json').then(airports=>{
         d3.select('.tooltip')
             .style('display', 'none')
     })
+
+
+    function switchLayout() {
+        if (visType === "map") {
+              // stop the simulation
+              // set the positions of links and nodes based on geo-coordinates
+              // set the map opacity to 1
+          } else { // force layout
+              // restart the simulation
+              // set the map opacity to 0
+          }
+      }
        
 })
