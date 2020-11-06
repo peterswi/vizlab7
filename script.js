@@ -1,6 +1,6 @@
 //Lab 7-- Mapping
 
-
+let visType
 const width=800
 const height=800
 const half=width/2
@@ -57,7 +57,7 @@ Promise.all([ // load multiple files
     
     svg.append('text')
             .attr('class','graphTitle')
-            .attr('x',300)
+            .attr('x',400)
             .attr('y',0)
             .text("Making Connections")
             .style('text-anchor','middle')
