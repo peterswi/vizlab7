@@ -43,9 +43,9 @@ Promise.all([ // load multiple files
 
     let worldmapgeo = topojson.feature(worldmap, worldmap.objects.countries)
     
-    const world=d3.geoMercator().fitExtent([[0,0],[width, height]],worldmapgeo)
-    let worldPath=d3.geoPath().projection(world)
-
+    const projection=d3.geoMercator().fitExtent([[0,0],[width, height]],worldmapgeo)
+    let worldPath=d3.geoPath().projection(projection)
+    
     const svg = d3.select('.chart')
             .append('svg')
             .attr('width', width)  
@@ -53,11 +53,21 @@ Promise.all([ // load multiple files
             .attr('viewBox', [0,0,width, height])
             .append('g')
             .attr('transform', `translate(${width/16}, ${height/16})`)
+    
+    svg.append('text')
+            .attr('class','graphTitle')
+            .attr('x',300)
+            .attr('y',0)
+            .text("Making Connections")
+            .style('text-anchor','middle')
+            .style('font-style','italic')
+            .attr('font-size',40)
 
     const map = svg.append("path")
         .datum(worldmapgeo)
         .attr("d", worldPath)
-        .style("opacity", 0)
+        .style("opacity", .5)
+        
 
     const mapOutline=svg.append("path")
             .datum(topojson.mesh(worldmap, worldmap.objects.countries))
@@ -131,12 +141,20 @@ Promise.all([ // load multiple files
     function switchLayout() {
         if (visType === "map") {
               // stop the simulation
+
               // set the positions of links and nodes based on geo-coordinates
               // set the map opacity to 1
           } else { // force layout
               // restart the simulation
+              
               // set the map opacity to 0
           }
       }
+
+      d3.selectAll("input[name=visType]").on("change", event=>{
+        visType = event.target.value;// selected button
+        console.log(visType)
+        switchLayout();
+    });
        
 })
