@@ -27,7 +27,8 @@ drag = airForce => {
       return d3.drag()
           .on("start", dragstarted)
           .on("drag", dragged)
-          .on("end", dragended);
+          .on("end", dragended)
+          .filter(event => visType === "force")
 
 }
 
@@ -66,7 +67,8 @@ Promise.all([ // load multiple files
     const map = svg.append("path")
         .datum(worldmapgeo)
         .attr("d", worldPath)
-        .style("opacity", .5)
+        .style('fill','darkgrey')
+        .style("opacity", 0)
         
 
     const mapOutline=svg.append("path")
@@ -121,7 +123,7 @@ Promise.all([ // load multiple files
         })
     
     
-
+    
     let tool = d3.selectAll('circle')
         .on("mouseenter", (event, nodes) => {
         const position = d3.pointer(event, window)
@@ -141,19 +143,32 @@ Promise.all([ // load multiple files
     function switchLayout() {
         if (visType === "map") {
               // stop the simulation
-
+                airForce.stop()
               // set the positions of links and nodes based on geo-coordinates
+              nodeElements.transition(2000)
+                    .attr("cx",d=> d.x = projection([d.longitude, d.latitude])[0])
+                    .attr("cy", d=> d.y = projection([d.longitude, d.latitude])[1])
+            linkElements.transition(2000)
+                .attr('x1', link => link.source.x)
+                .attr('y1', link => link.source.y)
+                .attr('x2', link => link.target.x)
+                .attr('y2', link => link.target.y)
               // set the map opacity to 1
+              map.transition(2000).style("opacity", 1);
+              mapOutline.transition(2000).style("opacity",1)
+              
           } else { // force layout
               // restart the simulation
-              
+                airForce.alphaTarget(0.1).restart()
               // set the map opacity to 0
+              map.transition(2000).style("opacity", 0);
+              mapOutline.transition(2000).style("opacity",0)
           }
       }
 
       d3.selectAll("input[name=visType]").on("change", event=>{
         visType = event.target.value;// selected button
-        console.log(visType)
+       
         switchLayout();
     });
        
