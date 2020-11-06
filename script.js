@@ -66,6 +66,21 @@ d3.json('airports.json').then(airports=>{
             .attr('x2', link => link.target.x)
             .attr('y2', link => link.target.y)
         })
-    airForce.force('link').link(alinks)
+    //airForce.force('link').link(alinks)
+
+    let tool = d3.selectAll('circle')
+        .on("mouseenter", (event, nodes) => {
+        const position = d3.pointer(event, window)
+        d3.select('.tooltip')
+            .style('display', 'inline-block')
+            .style('position', 'fixed')
+            .style('left', position[0]+10+'px')
+            .style('top', position[1]+5+'px')
+            .html(nodes.name)
+    })
+    .on("mouseleave", (event, nodes) => {
+        d3.select('.tooltip')
+            .style('display', 'none')
+    })
        
 })
