@@ -13,3 +13,6 @@ div{
     text-align: center;
 
 }
+#content{
+    display: inline-block;
+}
