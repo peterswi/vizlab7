@@ -5,6 +5,32 @@ const width=800
 const height=800
 const half=width/2
 
+drag = airForce => {
+
+    function dragstarted(event) {
+        if (!event.active) airForce.alphaTarget(0.3).restart();
+        event.subject.fx = event.subject.x;
+        event.subject.fy = event.subject.y;
+      }
+      
+      function dragged(event) {
+        event.subject.fx = event.x;
+        event.subject.fy = event.y;
+      }
+      
+      function dragended(event) {
+        if (!event.active) airForce.alphaTarget(0);
+        event.subject.fx = null;
+        event.subject.fy = null;
+      }
+      
+      return d3.drag()
+          .on("start", dragstarted)
+          .on("drag", dragged)
+          .on("end", dragended);
+
+}
+
 d3.json('airports.json').then(airports=>{
    
 
@@ -35,7 +61,7 @@ d3.json('airports.json').then(airports=>{
         //.force('x',d3.forceX(100))
         //.force('y',d3.forceY())
 
-        const linkElements = svg.selectAll('line')
+    const linkElements = svg.selectAll('line')
         .data(alinks)
         .enter().append('line')
           .attr('stroke-width', 1)
@@ -46,6 +72,7 @@ d3.json('airports.json').then(airports=>{
         .enter().append('circle')
           .attr('r', d=>circleScale(d.passengers))
           .attr('fill', d=>portScale(d.name))
+          .call(drag(airForce))
 
     nodeElements.append("title")
       .text(d=>d.name)
@@ -62,7 +89,8 @@ d3.json('airports.json').then(airports=>{
             .attr('x2', link => link.target.x)
             .attr('y2', link => link.target.y)
         })
-    //airForce.force('link').link(alinks)
+    
+    
 
     let tool = d3.selectAll('circle')
         .on("mouseenter", (event, nodes) => {
